@@ -6,6 +6,21 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
+  console.log("START");
+
+  console.log("BODY:", body);
+  console.log("REQ:", req);
+  console.log("res:", res);
+  console.log("USERNAME:", username);
+  
+  console.log("CALLING GITHUB GET...");
+
+  console.log("ENV:", {
+    token: !!process.env.GITHUB_TOKEN,
+    owner: process.env.REPO_OWNER,
+    repo: process.env.REPO_NAME
+  });
+
   // ✅ Handle preflight FIRST and EXIT
   if (req.method === "OPTIONS") {
     return res.status(200).end();
