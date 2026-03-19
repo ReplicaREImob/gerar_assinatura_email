@@ -463,7 +463,7 @@
 			
 			    try {
 			      const response = await fetch("https://gerar-assinatura-email-two.vercel.app/api/upload", {
-			        method: "POST",
+			        method: "OPTIONS",
 			        headers: { "Content-Type": "application/json" },
 			        body: JSON.stringify({ username, imageBase64: base64 }),
 			      });
