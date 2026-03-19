@@ -8,6 +8,7 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With"
   );
+
   console.log("START");
 
  
