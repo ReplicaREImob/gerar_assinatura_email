@@ -303,13 +303,14 @@
 
 	<div class="d-flex w-100 h-auto" style="flex-flow: column; justify-content: start; position: relative;">
 		<div class="d-flex w-100 h-auto align-items-center mb-3">
-			<div id="dropzone-div" class="d-flex w-100">
-				<form action="https://gerar-assinatura-email-two.vercel.app/api/upload" method="POST" class="dropzone w-100" id="dropzone">
-					<div class="dz-message d-flex w-100 my-2 align-items-center justify-content-center">
-						<span style="font-size:14px;color:#000;"><b>Arraste Imagem Para Aqui</b><br>ou<br><b>Clique Para Carregar Imagem</b></span>
-					</div>
-				</form>
-			</div>
+			<!-- <div id="dropzone-div" class="d-flex w-100"> -->
+				<!-- <form action="https://gerar-assinatura-email-two.vercel.app/api/upload" method="POST" class="dropzone w-100" id="dropzone"> -->
+					<!-- <div class="dz-message d-flex w-100 my-2 align-items-center justify-content-center"> -->
+						<!-- <span style="font-size:14px;color:#000;"><b>Arraste Imagem Para Aqui</b><br>ou<br><b>Clique Para Carregar Imagem</b></span> -->
+					<!-- </div> -->
+				<!-- </form> -->
+			<!-- </div> -->
+			<input id="fotoUpload-input" type="file" class="form-control">
 		</div>
 		<div class="d-flex w-100 h-auto align-items-center mb-3">
 			<div id="form-div" class="col-12">
@@ -449,7 +450,8 @@
 		function uploadFoto() {
 			debugger;
 			const username = document.getElementById("nome-input").value.toLowerCase().trim();
-			const fileInput = document.getElementsByClassName("dz-hidden-input");
+			//const fileInput = document.getElementsByClassName("dz-hidden-input");
+			const fileInput = document.getElementById("fotoUpload-input");
 			const file = fileInput.files[0];
 			
 			if (!file) return alert("Select an image");
@@ -637,11 +639,11 @@
 			}, 500);
 		});
 		
-	  Dropzone.options.dropzone = {
-		maxFilesize: 5, // MB
-		acceptedFiles: "image/*",
-		dictDefaultMessage: "Arraste ficheiros aqui ou clique para enviar",
-	  };
+	  <!-- Dropzone.options.dropzone = { -->
+		<!-- maxFilesize: 5, // MB -->
+		<!-- acceptedFiles: "image/*", -->
+		<!-- dictDefaultMessage: "Arraste ficheiros aqui ou clique para enviar", -->
+	  <!-- }; -->
 	  
 	  //Eventos
 	  $(document).ready(function(){
