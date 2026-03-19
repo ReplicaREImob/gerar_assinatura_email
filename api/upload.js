@@ -1,27 +1,22 @@
 import { Buffer } from "buffer";
-import fetch from "node-fetch";
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "5mb", // adjust based on image size
-    },
-  },
-};
 
 export default async function handler(req, res) {
+  // ✅ CORS headers (ALWAYS set first)
+  const allowedOrigin = "https://replicareimob.github.io";
 
-  // ✅ Allow CORS
-  res.setHeader("Access-Control-Allow-Origin", "*"); 
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Handle preflight request
+  // ✅ Handle preflight FIRST and EXIT
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  // ❌ Only allow POST after this
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   try {
     const { username, imageBase64 } = req.body;
@@ -35,7 +30,7 @@ export default async function handler(req, res) {
     const repo = process.env.REPO_NAME;
     const path = `images/${username}.png`;
 
-    // 1️⃣ Check if file exists
+    // Check if file exists
     let sha;
     const getResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
       headers: { Authorization: `Bearer ${githubToken}` },
@@ -43,13 +38,16 @@ export default async function handler(req, res) {
 
     if (getResponse.status === 200) {
       const data = await getResponse.json();
-      sha = data.sha; // overwrite existing file
+      sha = data.sha;
     }
 
-    // 2️⃣ Upload file
+    // Upload file
     const putResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
       method: "PUT",
-      headers: { Authorization: `Bearer ${githubToken}`, "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${githubToken}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         message: `Upload image for ${username}`,
         content: imageBase64,
@@ -62,12 +60,11 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: text });
     }
 
-    // 3️⃣ Return public URL
     const url = `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
-    res.status(200).json({ success: true, url });
+    return res.status(200).json({ success: true, url });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 }
