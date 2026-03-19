@@ -10,25 +10,26 @@ export default async function handler(req, res) {
   // ✅ CORS headers (ALWAYS set first)
   const allowedOrigin = "https://replicareimob.github.io";
 
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
-  );
-
-  
-
-  console.log("START");
+   console.log("START");
   console.log("REQ:", req);
   console.log("BODY:", req.body);
   console.log("res:", res);
   console.log("USERNAME:", req.body.username);
 
-  // ✅ Handle preflight FIRST and EXIT
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
+res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+res.setHeader(
+  "Access-Control-Allow-Headers",
+  "content-type, authorization, x-requested-with"
+);
+res.setHeader("Access-Control-Max-Age", "86400");
+
+// 🔥 CRITICAL: respond to preflight and STOP
+if (req.method === "OPTIONS") {
+  return res.status(200).end();
+}
+
+ 
 
   // ❌ Only allow POST after this
   if (req.method !== "POST") {
