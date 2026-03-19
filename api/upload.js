@@ -8,18 +8,7 @@ export default async function handler(req, res) {
 
   console.log("START");
 
-  console.log("BODY:", body);
-  console.log("REQ:", req);
-  console.log("res:", res);
-  console.log("USERNAME:", username);
-  
-  console.log("CALLING GITHUB GET...");
-
-  console.log("ENV:", {
-    token: !!process.env.GITHUB_TOKEN,
-    owner: process.env.REPO_OWNER,
-    repo: process.env.REPO_NAME
-  });
+ 
 
   // ✅ Handle preflight FIRST and EXIT
   if (req.method === "OPTIONS") {
@@ -33,6 +22,19 @@ export default async function handler(req, res) {
 
   try {
     let body = req.body;
+    
+    console.log("BODY:", body);
+    console.log("REQ:", req);
+    console.log("res:", res);
+    console.log("USERNAME:", body.username);
+    
+    console.log("CALLING GITHUB GET...");
+  
+    console.log("ENV:", {
+      token: !!process.env.GITHUB_TOKEN,
+      owner: process.env.REPO_OWNER,
+      repo: process.env.REPO_NAME
+    });
 
     if (!body || typeof body === "string") {
       try {
