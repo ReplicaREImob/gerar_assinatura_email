@@ -10,8 +10,10 @@ export default async function handler(req, res) {
   );
 
   console.log("START");
-
- 
+  console.log("REQ:", req);
+  console.log("BODY:", red.body);
+  console.log("res:", res);
+  console.log("USERNAME:", req.body.username);
 
   // ✅ Handle preflight FIRST and EXIT
   if (req.method === "OPTIONS") {
