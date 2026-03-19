@@ -1,5 +1,3 @@
-import { Buffer } from "buffer";
-
 export default async function handler(req, res) {
   // ✅ CORS headers (ALWAYS set first)
   const allowedOrigin = "https://replicareimob.github.io";
