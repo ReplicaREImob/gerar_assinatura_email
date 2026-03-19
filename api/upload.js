@@ -19,12 +19,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    let body;
+    let body = req.body;
 
-    try {
-      body = req.body;
-    } catch (e) {
-      return res.status(400).json({ error: "Invalid JSON body" });
+    if (!body || typeof body === "string") {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid JSON" });
+      }
     }
     
     const username = body?.username;
