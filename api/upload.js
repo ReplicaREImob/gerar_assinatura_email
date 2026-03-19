@@ -19,8 +19,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { username, imageBase64 } = req.body;
+    let body;
 
+    try {
+      body = req.body;
+    } catch (e) {
+      return res.status(400).json({ error: "Invalid JSON body" });
+    }
+    
+    const username = body?.username;
+    const imageBase64 = body?.imageBase64;
+    
     if (!username || !imageBase64) {
       return res.status(400).json({ error: "Missing username or image" });
     }
