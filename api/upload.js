@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   console.log("START");
   console.log("REQ:", req);
-  console.log("BODY:", red.body);
+  console.log("BODY:", req.body);
   console.log("res:", res);
   console.log("USERNAME:", req.body.username);
 
