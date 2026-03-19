@@ -1,3 +1,11 @@
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "5mb",
+    },
+  },
+};
+
 export default async function handler(req, res) {
   // ✅ CORS headers (ALWAYS set first)
   const allowedOrigin = "https://replicareimob.github.io";
@@ -8,6 +16,8 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization, X-Requested-With"
   );
+
+  
 
   console.log("START");
   console.log("REQ:", req);
