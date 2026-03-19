@@ -445,6 +445,43 @@
 		};
 		
 		//Funções
+
+		function uploadFoto() {
+			debugger;
+			const username = document.getElementById("username").value.trim();
+			const fileInput = document.getElementsByClassName("dz-hidden-input");
+			const file = fileInput.files[0];
+			
+			if (!file) return alert("Select an image");
+			
+			  // Convert file to Base64
+			  const reader = new FileReader();
+			  reader.onloadend = async () => {
+			    const base64 = reader.result.split(",")[1]; // remove data:image/png;base64, prefix
+			
+			    try {
+			      const response = await fetch("/api/upload", {
+			        method: "POST",
+			        headers: { "Content-Type": "application/json" },
+			        body: JSON.stringify({ username, imageBase64: base64 }),
+			      });
+			
+			      const data = await response.json();
+				  debugger;
+			      if (data.success) {
+			        document.getElementById("result").innerHTML = `
+			          Upload successful! <a href="${data.url}" target="_blank">${data.url}</a>
+			        `;
+			      } else {
+			        document.getElementById("result").textContent = "Upload failed: " + data.error;
+			      }
+			    } catch (err) {
+			      console.error(err);
+			      document.getElementById("result").textContent = "Error uploading image";
+			    }
+			  };
+			  reader.readAsDataURL(file);			
+		}
 		
 		function limparForm() {
 			debugger;
