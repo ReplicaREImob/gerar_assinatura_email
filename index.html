@@ -461,7 +461,7 @@
 			  var fileReader = new FileReader();
 				fileReader.onloadend = async () => {
 				  var imageBase64 = fileReader.result.split(",")[1]; // remove data:image/png;base64, prefix
-				  var filename = file.name;
+				  var filename = file.name.split(".")[0];
 				  console.log("file = ", file);
 				  console.log("filename = ", filename);
 				  var response = await fetch("https://gerar-assinatura-email-two.vercel.app/api/upload", {
