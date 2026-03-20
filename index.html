@@ -467,11 +467,9 @@
 					  "https://gerar-assinatura-email-two.vercel.app/api/upload",
 					  {
 						method: "POST",
-						headers: {
-						  "Content-Type": "application/json",
-						},
-						mode: "cors", // 🔥 force CORS
-						body: JSON.stringify({ username, base64 }),
+						headers: { "Content-Type": "application/json" },
+						mode: "cors", // ensures CORS is used
+						body: JSON.stringify({ username, imageBase64 }),
 					  }
 					);
 				  
