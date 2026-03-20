@@ -359,7 +359,7 @@
 				<div id="previz-div" style="width:100%;font-family: 'Libre Franklin', Arial, Helvetica, sans-serif;">
 					<div style="width:100%;display:flex;flex-flow:row;">
 						<div>
-							<img id="foto-previz" width="130" style="background-color: #3f3f3f;border: 2px solid #596222;border-radius:200px;" src="https://conferenceoeh.com/wp-content/uploads/profile-pic-dummy.png">
+							<img id="foto-previz" width="130" style="min-width: 130px; background-color: #3f3f3f;border: 2px solid #596222;border-radius:200px;" src="https://conferenceoeh.com/wp-content/uploads/profile-pic-dummy.png">
 						</div>
 						<div style="display:flex;flex-flow:column;margin-left:20px;">
 							<h1 id="nome-previz" style="margin:0;color:#596222;text-align:left;font-weight:900;">(Nome + Apelido)</h1>
@@ -471,6 +471,9 @@
 
 				  const data = await response.json();
 				  console.log("RAW RESPONSE:", data);
+				  if (data.url != null) {
+					$("#foto-previz").prop("src", data.url);
+				  }
 				};
 				fileReader.readAsDataURL(fileInput.files[0]);			
 		}
