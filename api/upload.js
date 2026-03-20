@@ -7,50 +7,30 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  // ✅ CORS headers (ALWAYS set first)
   const allowedOrigin = "https://replicareimob.github.io";
 
-   console.log("START");
-  console.log("REQ:", req);
-  console.log("BODY:", req.body);
-  console.log("res:", res);
-  console.log("USERNAME:", req.body.username);
+  // 1️⃣ Set CORS headers first, always
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  res.setHeader("Access-Control-Max-Age", "86400"); // optional caching
 
-res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-res.setHeader(
-  "Access-Control-Allow-Headers",
-  "content-type, authorization, x-requested-with"
-);
-res.setHeader("Access-Control-Max-Age", "86400");
+  // 2️⃣ Handle preflight immediately
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
-// 🔥 CRITICAL: respond to preflight and STOP
-if (req.method === "OPTIONS") {
-  return res.status(200).end();
-}
-
- 
-
-  // ❌ Only allow POST after this
+  // 3️⃣ Only allow POST
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  // 4️⃣ Now your POST logic
   try {
     let body = req.body;
-    
-    console.log("BODY:", body);
-    console.log("REQ:", req);
-    console.log("res:", res);
-    console.log("USERNAME:", body.username);
-    
-    console.log("CALLING GITHUB GET...");
-  
-    console.log("ENV:", {
-      token: !!process.env.GITHUB_TOKEN,
-      owner: process.env.REPO_OWNER,
-      repo: process.env.REPO_NAME
-    });
 
     if (!body || typeof body === "string") {
       try {
@@ -59,10 +39,9 @@ if (req.method === "OPTIONS") {
         return res.status(400).json({ error: "Invalid JSON" });
       }
     }
-    
-    const username = body?.username;
-    const imageBase64 = body?.imageBase64;
-    
+
+    const { username, imageBase64 } = body;
+
     if (!username || !imageBase64) {
       return res.status(400).json({ error: "Missing username or image" });
     }
@@ -72,30 +51,33 @@ if (req.method === "OPTIONS") {
     const repo = process.env.REPO_NAME;
     const path = `images/${username}.png`;
 
-    // Check if file exists
     let sha;
-    const getResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-      headers: { Authorization: `Bearer ${githubToken}` },
-    });
-
+    const getResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+      {
+        headers: { Authorization: `Bearer ${githubToken}` },
+      }
+    );
     if (getResponse.status === 200) {
       const data = await getResponse.json();
       sha = data.sha;
     }
 
-    // Upload file
-    const putResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${githubToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: `Upload image for ${username}`,
-        content: imageBase64,
-        sha: sha,
-      }),
-    });
+    const putResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${githubToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `Upload image for ${username}`,
+          content: imageBase64,
+          sha: sha,
+        }),
+      }
+    );
 
     if (!putResponse.ok) {
       const text = await putResponse.text();
@@ -104,7 +86,6 @@ if (req.method === "OPTIONS") {
 
     const url = `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
     return res.status(200).json({ success: true, url });
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Server error" });
