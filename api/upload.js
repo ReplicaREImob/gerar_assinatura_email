@@ -49,7 +49,7 @@ export default async function handler(req, res) {
     const githubToken = process.env.GITHUB_TOKEN;
     const owner = process.env.REPO_OWNER;
     const repo = process.env.REPO_NAME;
-    const path = `images/${username}.png`;
+    const path = `images/${username}`;
 
     let sha;
     const getResponse = await fetch(
