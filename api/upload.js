@@ -40,16 +40,16 @@ export default async function handler(req, res) {
       }
     }
 
-    const { username, imageBase64 } = body;
+    const { filename, imageBase64 } = body;
 
-    if (!username || !imageBase64) {
-      return res.status(400).json({ error: "Missing username or image" });
+    if (!filename || !imageBase64) {
+      return res.status(400).json({ error: "Missing filename or image" });
     }
 
     const githubToken = process.env.GITHUB_TOKEN;
     const owner = process.env.REPO_OWNER;
     const repo = process.env.REPO_NAME;
-    const path = `images/${username}`;
+    const path = `images/${filename}`;
 
     let sha;
     const getResponse = await fetch(
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: `Upload image for ${username}`,
+          message: `Upload image for ${filename}`,
           content: imageBase64,
           sha: sha,
         }),
