@@ -9,7 +9,7 @@ export const config = {
 export default async function handler(req, res) {
   const allowedOrigin = "https://replicareimob.github.io";
 
-  // 1️⃣ Set CORS headers first, always
+  // 1️⃣ Set CORS headers first
   res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader(
@@ -28,7 +28,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // 4️⃣ Now your POST logic
   try {
     let body = req.body;
 
@@ -51,18 +50,21 @@ export default async function handler(req, res) {
     const repo = process.env.REPO_NAME;
     const path = `images/${filename}`;
 
-    let sha;
+    // 4️⃣ Check if file already exists
     const getResponse = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
       {
         headers: { Authorization: `Bearer ${githubToken}` },
       }
     );
+
     if (getResponse.status === 200) {
-      const data = await getResponse.json();
-      sha = data.sha;
+      // File exists ✅ return existing URL
+      const url = `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
+      return res.status(200).json({ success: true, url, existed: true });
     }
 
+    // 5️⃣ Upload new file
     const putResponse = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/contents/${path}`,
       {
@@ -74,7 +76,6 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           message: `Upload image for ${filename}`,
           content: imageBase64,
-          sha: sha,
         }),
       }
     );
@@ -85,7 +86,7 @@ export default async function handler(req, res) {
     }
 
     const url = `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
-    return res.status(200).json({ success: true, url });
+    return res.status(200).json({ success: true, url, existed: false });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Server error" });
