@@ -523,9 +523,11 @@
 
 					if (data.url) {
 						$("#foto-previz").prop("src", data.url);
+					} else {
+						criarSwal("erroUploadFoto", data);
 					}
 				} catch (err) {
-					console.error(err);
+					criarSwal("erroUploadFoto", err);
 				}
 
 				toggleLoadingSpinner("esconder");
@@ -591,6 +593,17 @@
 					Swal.fire({
 					  title: "Erro!",
 					  text: "Não foi possível concretizar esta ação. Tente novamente! Se o erro persistir, contacte o administrador do sistema.",
+					  icon: "error",
+					  confirmButtonText: 'OK',
+					  confirmButtonColor: 'forestgreen',
+					  cancelButtonColor: 'firebrick',
+					  cancelButtonText: 'Cancelar'
+					});
+					break;
+				case "erroUploadFoto":
+					Swal.fire({
+					  title: "Erro!",
+					  html: "Não foi possível carregar a foto: <br><br>" + ((!mensagem) ? "" : mensagem),
 					  icon: "error",
 					  confirmButtonText: 'OK',
 					  confirmButtonColor: 'forestgreen',
