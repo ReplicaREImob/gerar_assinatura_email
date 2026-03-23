@@ -498,7 +498,7 @@
 		}*/
 		
 		function uploadFoto(file) {
-			toggleLoadingSpinner("mostrar");
+			toggleLoadingSpinner("mostrar", 'body');
 
 			//var username = document.getElementById("nome-input").value.toLowerCase().trim();	
 			//var mensagensErroNome = "<span><b>Nome:</b></span><br><i class='fa-solid fa-triangle-exclamation me-1 aviso-txt'></i>Precisa preencher o nome primeiro! <br><br>";
@@ -535,7 +535,6 @@
 		}
 		
 		function limparForm() {
-			debugger;
 			var camposForm = $("#form-div form").find(".campo-form");
 			$.each(camposForm, function(k, v) {
 				var $el = $(v);
@@ -757,7 +756,7 @@
 					$(element).removeClass("validado");
 				}
 				
-			}, 300); // ⏱ same delay as autocomplete
+			}, 300);
 		});
 	  });
 	</script>
