@@ -166,6 +166,10 @@
 		color: #596222;
 	}
 	
+	.dz-preview.dz-file-preview {
+		margin: auto !important;
+	}
+	
 	@media (max-width: 579px) {
 			
 		#replica-matosinhos-morada {
@@ -303,14 +307,14 @@
 
 	<div class="d-flex w-100 h-auto" style="flex-flow: column; justify-content: start; position: relative;">
 		<div class="d-flex w-100 h-auto align-items-center mb-3">
-			<!-- <div id="dropzone-div" class="d-flex w-100"> -->
-				<!-- <form action="https://gerar-assinatura-email-two.vercel.app/api/upload" method="POST" class="dropzone w-100" id="dropzone"> -->
-					<!-- <div class="dz-message d-flex w-100 my-2 align-items-center justify-content-center"> -->
-						<!-- <span style="font-size:14px;color:#000;"><b>Arraste Imagem Para Aqui</b><br>ou<br><b>Clique Para Carregar Imagem</b></span> -->
-					<!-- </div> -->
-				<!-- </form> -->
-			<!-- </div> -->
-			<input id="fotoUpload-input" type="file" class="form-control">
+			<div id="dropzone-div" class="d-flex w-100">
+				<form class="dropzone w-100" id="dropzone">
+					<div class="dz-message d-flex w-100 my-2 align-items-center justify-content-center">
+						<span style="font-size:14px;color:#000;"><b>Arraste Imagem Para Aqui</b><br>ou<br><b>Clique Para Carregar Imagem</b></span>
+					</div>
+				</form>
+			</div>
+			<!-- <input id="fotoUpload-input" type="file" class="form-control"> -->
 			<div id="result"></div>
 		</div>
 		<div class="d-flex w-100 h-auto align-items-center mb-3">
@@ -426,6 +430,8 @@
 		//Variáveis globais
 		
 		var timeout;
+		var spinnerPequenoLight = '<div class="spinner-border text-light" role="status"><span class="sr-only"></span></div>';
+		var spinnerPequenoVerde = '<div class="spinner-border verde-txt" role="status"><span class="sr-only"></span></div>';
 		var nomeDefault = "(Nome + Apelido)";
 		var contactoDefault = "(Contacto)";
 		var cargoDefault = "(Cargo)";
@@ -447,12 +453,23 @@
 		};
 		
 		//Funções
-
-		function uploadFoto() {
+		
+		function toggleLoadingSpinner(accao, local) {
 			debugger;
+			switch (accao) {
+				case "mostrar":
+					$(local).prepend(spinnerPequenoVerde);
+					break;
+				case "esconder":
+					$(local).find(".spinner-border").remove();
+					break;
+			}
+		}
+
+		/*function uploadFoto(fileInput) {
+			toggleLoadingSpinner("mostrar", $(fileInput).parent());
 			var username = document.getElementById("nome-input").value.toLowerCase().trim();
 			//const fileInput = document.getElementsByClassName("dz-hidden-input");
-			var fileInput = document.getElementById("fotoUpload-input");
 			var file = fileInput.files[0];
 			
 			if (!file) return alert("Select an image");
@@ -476,7 +493,45 @@
 					$("#foto-previz").prop("src", data.url);
 				  }
 				};
-				fileReader.readAsDataURL(fileInput.files[0]);			
+				fileReader.readAsDataURL(fileInput.files[0]);
+				toggleLoadingSpinner("esconder", $(fileInput).parent());
+		}*/
+		
+		function uploadFoto() {
+			toggleLoadingSpinner("mostrar");
+
+			//var username = document.getElementById("nome-input").value.toLowerCase().trim();	
+			//var mensagensErroNome = "<span><b>Nome:</b></span><br><i class='fa-solid fa-triangle-exclamation me-1 aviso-txt'></i>Precisa preencher o nome primeiro! <br><br>";
+
+			//if (!username) return criarSwal("avisoValidarFormIncompleto", "");
+
+			var reader = new FileReader();
+
+			reader.onloadend = async () => {
+				var imageBase64 = reader.result.split(",")[1];
+				var filename = file.name;
+
+				try {
+					var response = await fetch("https://gerar-assinatura-email-two.vercel.app/api/upload", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ filename, imageBase64 }),
+					});
+
+					var data = await response.json();
+					console.log("RAW RESPONSE:", data);
+
+					if (data.url) {
+						$("#foto-previz").prop("src", data.url);
+					}
+				} catch (err) {
+					console.error(err);
+				}
+
+				toggleLoadingSpinner("esconder");
+			};
+
+			reader.readAsDataURL(file);
 		}
 		
 		function limparForm() {
@@ -634,14 +689,34 @@
 			}, 500);
 		});
 		
-	  <!-- Dropzone.options.dropzone = { -->
-		<!-- maxFilesize: 5, // MB -->
-		<!-- acceptedFiles: "image/*", -->
-		<!-- dictDefaultMessage: "Arraste ficheiros aqui ou clique para enviar", -->
-	  <!-- }; -->
+	    Dropzone.autoDiscover = false;
+
+		const dropzone = new Dropzone("#dropzone", {
+		  url: "/", // dummy (won’t be used)
+		  autoProcessQueue: false, // disable upload
+		  clickable: true,
+		  maxFiles: 1,
+		  acceptedFiles: "image/*",
+		  addRemoveLinks: true
+		});
 	  
 	  //Eventos
 	  $(document).ready(function(){
+	  
+		dropzone.on("addedfile", function(file) {
+			console.log("File added:", file);
+
+			if (dropzone.files.length > 1) {
+				dropzone.removeFile(dropzone.files[0]);
+			}
+
+			uploadFoto(file);
+		});
+	  
+		//colocar imagem no previz após utilizador carregar foto
+		$(document).on("change", "#fotoUpload-input", function(){
+			uploadFoto(this);
+		});
 	  
 		//Selecciona todo o texto ao dar foco a um input
 		$(".campo-form, .focar").on("focus", function() {
