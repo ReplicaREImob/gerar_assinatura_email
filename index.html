@@ -444,6 +444,7 @@
 		var contactoDefault = "(Contacto)";
 		var cargoDefault = "(Cargo)";
 		var moradaDefault = "(Morada)";
+		var fotoDefault = 'https://conferenceoeh.com/wp-content/uploads/profile-pic-dummy.png';
 		var templateDefault = 1;
 		var templateReplica = '<table cellpadding="0" cellspacing="0" border="0" width="650" style="font-family:Arial,Helvetica,sans-serif;"><tr><td width="140" valign="top"><img src="{{foto}}" width="130" style="display:block;border:2px solid #596222;border-radius:100px;background-color:#3f3f3f;"></td><td valign="top" style="padding-left:20px;"><p style="margin:0;font-size:32px;color:#596222;font-weight:bold;">{{nome}}</p><p style="margin:0 0 7px 0;font-size:26px;color:#000;">{{cargo}}</p><p style="margin:0 0 7px 0;font-size:14px;color:#000;"><strong>+351 {{contacto}}</strong></p><p style="margin:0;font-size:13px;color:#000;">{{morada}}</p></td><td valign="middle" align="right"><a href="{{whatsapp}}" target="_blank" style="background-color:#596222;color:#ffffff;text-decoration:none;padding:10px 15px;border-radius:25px;display:inline-block;"><img src="https://i.imgur.com/xc4jWee.png" width="20" height="20" style="vertical-align:middle;margin-right:5px;"><span style="font-size:13px;font-weight:bold;">Agendar Reunião</span><br><span style="font-size:12px;">Book a Meeting</span></a></td></tr><tr><td colspan="3" style="padding-top:20px;"><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#596222;color:#ffffff;"><tr><td style="padding:15px;"><a href="https://www.replica.pt/" target="_blank" style="margin-right: 10px;"><img src="https://i.imgur.com/QdPE7aN.png" width="150" style="display:block;"></a></td><td align="right" style="padding:15px;"><a href="https://www.facebook.com/replica.realestatecompany" target="_blank" style="margin-right: 10px;"><img src="https://i.imgur.com/QZ5yMRQ.png" width="25" height="25" style="margin-right:5px;"></a><a href="https://www.instagram.com/replica.realestate/" target="_blank" style="margin-right: 10px;"><img src="https://i.imgur.com/UC6CNWR.png" width="25" height="25" style="margin-right:5px;"></a><a href="https://www.linkedin.com/company/replica-real-estate/" target="_blank" style="margin-right: 10px;"><img src="https://i.imgur.com/zzOvGel.png" width="25" height="25" style="margin-right:5px;"></a><a href="https://www.youtube.com/@RéplicaRealEstate" target="_blank" style="margin-right: 10px;"><img src="https://i.imgur.com/jxBQYUi.png" width="30" height="25"></a></td></tr></table></td></tr></table>';
 		var registerFormvalidado = false;
@@ -724,6 +725,14 @@
 	  //Eventos
 	  $(document).ready(function(){
 	  
+		// Ao apagar foto carregada, voltar a colocar a foto default na previz
+		dropzone.on("removedfile", function(file) {
+			console.log("File removed");
+
+			$("foto-previz").prop("src", fotoDefault);
+		});
+	  
+		// Ao carregar foto, fazer upload para o repo do github e posteriormente colocar a foto na previz
 		dropzone.on("addedfile", function(file) {
 			console.log("File added:", file);
 
